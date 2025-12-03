@@ -36,6 +36,11 @@ export default function CSVComparator () {
 
         go.run(wasm.instance)
 
+        // calls the Go function
+        if (typeof window.sayHello !== 'function') {
+          window.sayHello()
+        }
+
         if (typeof window.parseCSV !== 'function') {
           setError('WASM loaded but parseCSV not found')
           return

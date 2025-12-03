@@ -3,9 +3,17 @@ package main
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"syscall/js"
 )
+
+func sayHello() js.Func {
+	fmt.Println("Hello, I'm Go WASM Module!")
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		return "Hello from Go!"
+	})
+}
 
 func parseCSV() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
@@ -59,5 +67,6 @@ func parseCSV() js.Func {
 
 func main() {
 	js.Global().Set("parseCSV", parseCSV())
+	js.Global().Set("sayHello", sayHello())
 	select {} // keep WASM alive
 }
