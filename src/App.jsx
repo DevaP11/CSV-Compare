@@ -241,7 +241,7 @@ export default function CSVComparator () {
         {comparisonDone && (
           <div className='bg-green-50 border border-green-200 rounded-lg p-4 mb-6'>
             <p className='text-green-800 text-sm font-medium'>
-              Comparison complete! Comparing "{columnToCompareA}" from File A with "{columnToCompareB}" from File B
+              Comparison complete!
             </p>
           </div>
         )}
