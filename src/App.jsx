@@ -388,6 +388,17 @@ export default function CSVComparator () {
           </div>
         )}
       </div>
+      <footer className='mt-16 py-6 text-center text-sm text-gray-500'>
+        <em className='italic'>csvCompare</em> by{' '}
+        <a
+          href='https://devapramod.com/'
+          target='_blank'
+          rel='noopener noreferrer'
+          className='text-black hover:text-red-800 font-medium'
+        >
+          Deva pramod
+        </a>
+      </footer>
     </div>
   )
 }
