@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import Papa from 'papaparse'
+import React, { useState, useEffect } from 'react'
 import { Upload, FileText, AlertCircle, Search } from 'lucide-react'
 import {
   Select,
@@ -10,6 +9,8 @@ import {
 } from '@/components/ui/select'
 
 export default function CSVComparator () {
+  const [goReady, setGoReady] = useState(false)
+
   const [fileA, setFileA] = useState(null)
   const [fileB, setFileB] = useState(null)
   const [dataA, setDataA] = useState([])
@@ -23,34 +24,72 @@ export default function CSVComparator () {
   const [error, setError] = useState('')
   const [comparisonDone, setComparisonDone] = useState(false)
 
-  const handleFileUpload = (file, isFileA) => {
+  useEffect(() => {
+    async function initWasm () {
+      try {
+        const go = new window.Go()
+
+        const wasm = await WebAssembly.instantiateStreaming(
+          fetch('/main.wasm'),
+          go.importObject
+        )
+
+        go.run(wasm.instance)
+
+        if (typeof window.parseCSV !== 'function') {
+          setError('WASM loaded but parseCSV not found')
+          return
+        }
+
+        setGoReady(true)
+      } catch (err) {
+        console.error('WASM load error:', err)
+        setError('Failed to load WebAssembly module')
+      }
+    }
+
+    initWasm()
+  }, [])
+
+  const handleFileUpload = async (file, isFileA) => {
     if (!file) return
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      complete: (result) => {
-        if (result.data && result.data.length > 0) {
-          const headers = Object.keys(result.data[0]).map(h => h.trim())
+    if (!goReady) {
+      setError('WASM not ready yet')
+      return
+    }
 
-          if (isFileA) {
-            setFileA(file.name)
-            setColumnsA(headers)
-            setDataA(result.data)
-          } else {
-            setFileB(file.name)
-            setColumnsB(headers)
-            setDataB(result.data)
-          }
-          setError('')
-          setComparisonDone(false)
-        }
-      },
-      error: (error) => {
-        setError(`Error parsing CSV: ${error.message}`)
-      }
-    })
+    const csvText = await file.text()
+    const response = window.parseCSV(csvText)
+
+    let parsed
+    try {
+      parsed = JSON.parse(response)
+    } catch (err) {
+      setError('Invalid CSV: ' + err.message)
+      return
+    }
+
+    if (parsed.error) {
+      setError(parsed.error)
+      return
+    }
+
+    const headers = parsed.headers
+    const rows = parsed.rows
+
+    if (isFileA) {
+      setFileA(file.name)
+      setColumnsA(headers)
+      setDataA(rows)
+    } else {
+      setFileB(file.name)
+      setColumnsB(headers)
+      setDataB(rows)
+    }
+
+    setError('')
+    setComparisonDone(false)
   }
 
   const handleCompare = () => {
