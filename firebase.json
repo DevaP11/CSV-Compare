@@ -1,6 +1,17 @@
 {
   "hosting": {
-    "source": ".",
+    "public": "dist",
+    "headers": [
+      {
+        "source": "**/*.wasm",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/wasm"
+          }
+        ]
+      }
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -8,6 +19,12 @@
     ],
     "frameworksBackend": {
       "region": "us-east1"
-    }
+    },
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

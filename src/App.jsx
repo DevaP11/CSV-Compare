@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import Logo from '../public/logo.webp'
 import { Upload, FileText, AlertCircle, Search } from 'lucide-react'
 import {
   Select,
@@ -162,9 +163,15 @@ export default function CSVComparator () {
   return (
     <div className='min-h-screen bg-gradient-to-br from-red-50 to-beige-100 p-8'>
       <div className='max-w-7xl mx-auto'>
-        <h1 className='text-4xl font-light text-gray-800 mb-2 text-center'>
-          Compare CSV Files
-        </h1>
+        <div className='flex justify-center p-0 m-0'>
+          <img
+            src={Logo}
+            alt='Logo'
+            decoding='async'
+            fetchPriority='high'
+            className='w-[30vh]'
+          />
+        </div>
         <p className='text-gray-600 text-center mb-8'>
           Upload two CSV files and specify columns to compare their rows
         </p>
@@ -375,7 +382,7 @@ export default function CSVComparator () {
         {dataA.length === 0 && dataB.length === 0 && (
           <div className='bg-white rounded-lg shadow-md p-12 text-center'>
             <FileText className='mx-auto text-gray-400 mb-4' size={48} />
-            <p className='text-gray-500 text-lg'>
+            <p className='text-gray-500 text-sm'>
               Upload both CSV files to start comparing
             </p>
           </div>
